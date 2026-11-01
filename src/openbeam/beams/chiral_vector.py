@@ -1,5 +1,8 @@
 """Two-colour chiral vector beam: two vector vortex beams whose sum is locally chiral.
 
+Beam proposed by A. Rodriguez et al., "Chiral Vector Beams for Topological
+Enantio-Sensitive Imaging", arXiv:2610.17111 (2026). Definitions it builds on:
+
 * Vector vortex beams: beams with a spatially inhomogeneous polarization and a
   polarization singularity on the axis, built from Laguerre-Gauss vortices of
   charges +l and -l in opposite circular polarizations; for l = 1 they are the
@@ -60,7 +63,7 @@ class ChiralVectorBeam:
 
     ``amplitude`` is the peak transverse field of the ``omega`` beam at the
     focus; the ``2 omega`` peak is ``amplitude * sqrt(intensity_ratio)``.
-    Default parameter values from A. Rodriguez et al., arXiv:2610.17111 (2026).
+    Default parameter values from Rodriguez et al. (2026).
     """
 
     wavelength: float = 639e-9

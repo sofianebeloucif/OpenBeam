@@ -6,10 +6,15 @@ Beams implemented: the fundamental **Gaussian beam** (TEM00, linear or circular
 polarization, with its post-paraxial longitudinal field) and a two-colour
 **chiral vector beam**: a tightly focused radially polarized vector vortex beam
 at `ω` (with its longitudinal component `E_z`) superposed with an azimuthally
-polarized vector vortex beam at `2ω`, whose sum is locally chiral.
+polarized vector vortex beam at `2ω`, whose sum is locally chiral, as proposed
+by A. Rodriguez *et al.*, *Chiral Vector Beams for Topological Enantio-Sensitive
+Imaging*, [arXiv:2610.17111](https://arxiv.org/abs/2610.17111) (2026).
 
 ### Definitions and references
 
+- **Chiral vector beam**: the beam implemented here and its default parameters
+  (λ = 639 nm, waists 2.5 and 5 µm, I₂ω/Iω = 0.01, ψ₂ω = 1.94π).
+  A. Rodriguez *et al.*, [arXiv:2610.17111](https://arxiv.org/abs/2610.17111) (2026).
 - **Vector vortex beam**: spatially inhomogeneous polarization with a
   polarization singularity on the axis, built from Laguerre-Gauss vortices of
   charges ±ℓ in opposite circular polarizations; ℓ = 1 gives the radially and
@@ -39,10 +44,6 @@ polarized vector vortex beam at `2ω`, whose sum is locally chiral.
   233901 (2003), [doi:10.1103/PhysRevLett.91.233901](https://doi.org/10.1103/PhysRevLett.91.233901).
 - **Gaussian beam**: H. Kogelnik, T. Li, *Laser beams and resonators*,
   Appl. Opt. **5**, 1550 (1966), [doi:10.1364/AO.5.001550](https://doi.org/10.1364/AO.5.001550).
-
-Default parameters of `ChiralVectorBeam` (λ = 639 nm, waists 2.5 and 5 µm,
-I₂ω/Iω = 0.01, ψ₂ω = 1.94π) are taken from A. Rodriguez *et al.*,
-[arXiv:2610.17111](https://arxiv.org/abs/2610.17111) (2026).
 
 `openbeam.chiral_correlation(field)` computes h⁽⁵⁾. For the chiral vector beam
 its modulus does not depend on the two-colour phase `ψ_2ω`, and

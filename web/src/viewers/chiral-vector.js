@@ -43,6 +43,7 @@ createComponentViewer({
       + "3D Lissajous figure, measured by the correlation function h⁽⁵⁾.",
   },
   references: [
+    { label: "Rodriguez et al., arXiv:2610.17111 (2026)", href: "https://arxiv.org/abs/2610.17111" },
     { label: "Rosales-Guzmán, Ndagano, Forbes, J. Opt. 20, 123001 (2018)", href: "https://doi.org/10.1088/2040-8986/aaeb7d" },
     { label: "Zhan, Adv. Opt. Photon. 1, 1 (2009)", href: "https://doi.org/10.1364/AOP.1.000001" },
     { label: "Ayuso et al., Nat. Photon. 13, 866 (2019)", href: "https://doi.org/10.1038/s41566-019-0531-2" },

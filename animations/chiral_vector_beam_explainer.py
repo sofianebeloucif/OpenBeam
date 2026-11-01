@@ -132,8 +132,8 @@ class ChiralVectorBeamExplainer(ThreeDScene):
     def title_card(self):
         title = Text("Les faisceaux vectoriels chiraux", font_size=52, weight="BOLD")
         subtitle = Text("Une lumière qui a une « main »", font_size=32, color=TEAL_C).next_to(title, DOWN)
-        source = Text("Lumière localement chirale : Ayuso et al., Nat. Photon. 13, 866 (2019)", font_size=20,
-                      color=GREY_B).to_edge(DOWN)
+        source = Text("D'après Rodriguez et al., arXiv:2610.17111 (2026) ; lumière localement chirale : "
+                      "Ayuso et al., Nat. Photon. 13, 866 (2019)", font_size=18, color=GREY_B).to_edge(DOWN)
         self.add_fixed_in_frame_mobjects(title, subtitle, source)
         self.play(Write(title), run_time=1.5)
         self.play(FadeIn(subtitle, shift=UP * 0.3), FadeIn(source))

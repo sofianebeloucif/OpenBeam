@@ -22,9 +22,8 @@ function card(beam, lang) {
     element("ul", { className: "tags" }, ...beam.tags.map((t) => element("li", { textContent: tr(t, lang) }))),
     element(
       "div", { className: "card-footer" },
-      beam.reference
-        ? element("a", { className: "reference", href: beam.reference.href, textContent: beam.reference.label })
-        : element("span"),
+      element("span", { className: "references" },
+        ...(beam.references ?? []).map((ref) => element("a", { className: "reference", href: ref.href, textContent: ref.label }))),
       element("span", { className: `action ${ready ? "" : "disabled"}`, textContent: tr(ready ? S.explore : S.soon, lang) }),
     ),
   );
