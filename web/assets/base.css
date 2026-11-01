@@ -1,0 +1,15 @@
+/* Shared design tokens of the OpenBeam web pages. */
+
+:root {
+  color-scheme: dark;
+  --fg: #e8e8e8;
+  --muted: #9a9a9a;
+  --panel: rgba(20, 20, 24, 0.94);
+  --line: #2a2a30;
+  --accent: #2f6fa8;
+  --link: #8cc8ff;
+}
+
+* { box-sizing: border-box; }
+
+a { color: var(--link); }

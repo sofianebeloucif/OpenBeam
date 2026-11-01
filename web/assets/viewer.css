@@ -1,0 +1,55 @@
+/* Layout and controls of the beam viewers (one page per beam). */
+
+html, body { margin: 0; height: 100%; background: #000; color: var(--fg);
+  font: 14px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif; }
+body { display: flex; flex-direction: column; height: 100dvh; }
+
+header { position: relative; z-index: 2; display: flex; align-items: center; gap: 8px 18px; flex-wrap: wrap;
+  padding: 8px 14px; background: var(--panel); border-bottom: 1px solid var(--line); }
+h1 { font-size: 16px; margin: 0; font-weight: 600; white-space: nowrap; }
+.back { color: var(--muted); text-decoration: none; white-space: nowrap; }
+.back:hover { color: var(--fg); }
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; flex: 1; }
+.group { display: flex; align-items: center; gap: 8px; }
+.group > label, .group-title { color: var(--muted); }
+.chips, .segmented { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+.chips input, .segmented input { position: absolute; opacity: 0; pointer-events: none; }
+.chips label, .segmented label { padding: 4px 10px; cursor: pointer; border: 1px solid #3a3a42;
+  border-radius: 6px; user-select: none; }
+.chips input:checked + label, .segmented input:checked + label { background: var(--accent); border-color: var(--accent); color: #fff; }
+.chips input:focus-visible + label, .segmented input:focus-visible + label { outline: 2px solid #8cc8ff; }
+.chips .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+button { background: #26262c; color: var(--fg); border: 1px solid #3a3a42; border-radius: 6px;
+  padding: 4px 12px; cursor: pointer; font: inherit; }
+button:hover { background: #32323a; }
+input[type=range] { width: 110px; accent-color: #4fd1ff; }
+#position { width: 200px; }
+.value { min-width: 4.5em; font-variant-numeric: tabular-nums; }
+#settings-toggle { display: none; }
+.lang { margin-left: auto; font-weight: 600; min-width: 3em; }
+.boosts { display: contents; }
+
+main { position: relative; flex: 1; min-height: 0; }
+#view { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+.frame { position: absolute; pointer-events: none; border: 1px solid #16161b; }
+.frame .label { position: absolute; left: 0; top: 0; padding: 6px 10px; font-size: 13px; text-shadow: 0 1px 2px #000; }
+#readout { position: absolute; right: 10px; top: 6px; color: var(--muted); font-variant-numeric: tabular-nums;
+  pointer-events: none; text-shadow: 0 1px 2px #000; }
+
+footer { padding: 4px 14px; color: var(--muted); font-size: 12px; background: var(--panel); border-top: 1px solid var(--line); }
+footer summary { cursor: pointer; padding: 2px 0; }
+footer p { margin: 2px 0 4px; }
+[hidden] { display: none !important; }
+
+/* small screens: settings in a drawer below the title bar */
+@media (max-width: 860px) {
+  #settings-toggle { display: inline-block; }
+  .boosts { display: flex; flex-direction: column; gap: 8px; }
+  .controls { display: none; position: absolute; left: 0; right: 0; top: 100%; padding: 12px 14px;
+    background: #141418; border-bottom: 1px solid var(--line); flex-direction: column; align-items: stretch;
+    max-height: 70vh; overflow-y: auto; }
+  body.settings-open .controls { display: flex; }
+  .group { justify-content: space-between; flex-wrap: wrap; }
+  input[type=range], #position { flex: 1; min-width: 120px; width: auto; }
+  .frame .label { font-size: 12px; padding: 4px 8px; }
+}

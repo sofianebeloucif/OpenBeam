@@ -1,0 +1,65 @@
+# Builds the web hub and its beam viewers (web/) and publishes them on GitHub Pages.
+# Repository settings: Pages > Build and deployment > Source = "GitHub Actions".
+name: Deploy web page
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Export the fields with OpenBeam
+        run: |
+          pip install -e .
+          python web/export.py
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Bundle the pages
+        working-directory: web
+        run: |
+          npm ci
+          npm run build
+
+      - name: Assemble the site
+        run: |
+          mkdir _site
+          cp web/index.html _site/
+          cp -r web/assets web/build _site/
+          # one folder per beam viewer: every directory holding an index.html
+          for page in web/*/index.html; do cp -r "$(dirname "$page")" _site/; done
+          touch _site/.nojekyll
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

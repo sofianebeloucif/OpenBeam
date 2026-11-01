@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="OpenBeam : visualisations 3D interactives de faisceaux laser et de lumière structurée. Interactive 3D visualizations of laser beams and structured light.">
+  <title>OpenBeam : visualiser la lumière structurée</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/base.css">
+  <link rel="stylesheet" href="assets/hub.css">
+</head>
+<body>
+  <button id="lang" class="lang"></button>
+  <header class="hero">
+    <p class="eyebrow" data-i18n="eyebrow">OpenBeam</p>
+    <h1 data-i18n="heading">Visualiser la lumière structurée</h1>
+    <p class="lede" data-i18n="lede"></p>
+  </header>
+  <main>
+    <section id="beams" class="grid"></section>
+    <noscript><p class="notice">Cette page a besoin de JavaScript pour afficher la liste des faisceaux.
+      This page needs JavaScript to list the beams.</p></noscript>
+  </main>
+  <footer data-i18n="footer"></footer>
+  <script src="build/hub.js"></script>
+</body>
+</html>

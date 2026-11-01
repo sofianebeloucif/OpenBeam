@@ -1,0 +1,28 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "openbeam"
+version = "0.1.0"
+description = "Open source library to compute and visualize structured light beams"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=1.24",
+    "scipy>=1.10",
+    "matplotlib>=3.7",
+    "pillow",
+]
+
+[project.optional-dependencies]
+3d = ["pyvista>=0.43", "imageio", "imageio-ffmpeg"]
+video = ["manim>=0.18"]
+dev = ["pytest"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/openbeam"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
