@@ -14,6 +14,8 @@ Values are in units of the beam amplitude; positions in µm.
 
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 import numpy as np
 
 from openbeam import Grid
@@ -36,17 +38,27 @@ def anchors(w: float):
     return rho, phi
 
 
-class Fronts:
-    """Equal-phase surfaces of the fundamental: ``k z + k rho^2 / 2R(z) - gouy_order * Gouy(z)``."""
+@dataclass
+class Variant:
+    """A beam (exposing ``field(grid)``) and the phase of its fundamental, which defines its wavefronts:
+    ``k z + k rho^2 / 2R(z) - gouy_order Gouy(z) + helicity phi`` (``helicity = l`` for a scalar vortex,
+    whose wavefront is a helicoid; 0 when the polarization, not the phase, winds around the axis)."""
 
-    def __init__(self, wavelength: float, w0: float, gouy_order: int):
-        self.wavelength, self.w0, self.gouy_order = wavelength, w0, gouy_order
+    beam: object
+    gouy_order: int
+    helicity: int = 0
+
+
+class Fronts:
+    def __init__(self, wavelength: float, w0: float, variant: Variant):
+        self.wavelength, self.w0 = wavelength, w0
+        self.gouy_order, self.helicity = variant.gouy_order, variant.helicity
         self.k = 2 * np.pi / wavelength
 
-    def phase(self, rho, z):
+    def phase(self, rho, z, phi=0.0):
         lam, w0 = self.wavelength, self.w0
         return (self.k * z + self.k * rho**2 / 2 * inverse_curvature(z, w0, lam)
-                - self.gouy_order * gouy_phase(z, w0, lam))
+                - self.gouy_order * gouy_phase(z, w0, lam) + self.helicity * phi)
 
 
 def field_at(beam, x, y, z):
@@ -70,7 +82,7 @@ def moving(beam, fronts: Fronts, z_range) -> list[dict]:
         w = beam_radius(z_front, fronts.w0, fronts.wavelength)
         rho, phi = anchors(w)
         target = fronts.phase(0.0, z_front)
-        z = z_front + (target - fronts.phase(rho, z_front)) / fronts.k
+        z = z_front + (target - fronts.phase(rho, z_front, phi)) / fronts.k
         x, y = rho * np.cos(phi), rho * np.sin(phi)
         harmonics, omega = field_at(beam, x, y, z)
         t = (target - TAU0) / omega
@@ -83,11 +95,10 @@ def moving(beam, fronts: Fronts, z_range) -> list[dict]:
     return frames
 
 
-def export_variants(variants: dict, wavelength: float, w0: float, gouy_order: int, omega: float,
+def export_variants(variants: dict[str, Variant], wavelength: float, w0: float, omega: float,
                     z_range_zr=(-1.5, 1.5)) -> dict:
-    """``variants`` maps a variant id to a beam object exposing ``field(grid)``."""
+    """``variants`` maps a variant id to a ``Variant``; all share the wavelength and waist."""
     zr = rayleigh_range(w0, wavelength)
-    fronts = Fronts(wavelength, w0, gouy_order)
     z_range = tuple(c * zr for c in z_range_zr)
     return {
         "wavelength_um": wavelength / UM,
@@ -95,6 +106,6 @@ def export_variants(variants: dict, wavelength: float, w0: float, gouy_order: in
         "zr_um": zr / UM,
         "period_fs": 2 * np.pi / omega / 1e-15,
         "tau0": TAU0,
-        "variants": {vid: {"fixed": fixed(beam, w0), "moving": moving(beam, fronts, z_range)}
-                     for vid, beam in variants.items()},
+        "variants": {vid: {"fixed": fixed(v.beam, w0), "moving": moving(v.beam, Fronts(wavelength, w0, v), z_range)}
+                     for vid, v in variants.items()},
     }

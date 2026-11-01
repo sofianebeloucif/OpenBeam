@@ -23,6 +23,25 @@ export const BEAMS = [
     status: "ready",
   },
   {
+    id: "vortex",
+    title: { fr: "Faisceaux vortex", en: "Vortex beams" },
+    summary: {
+      fr: "Vortex scalaires, dont la phase tourne autour de l'axe (front d'onde hélicoïdal, moment angulaire "
+        + "orbital), et vortex vectoriels, dont c'est la polarisation qui tourne (radiale, azimutale).",
+      en: "Scalar vortices, whose phase winds around the axis (helical wavefront, orbital angular momentum), "
+        + "and vector vortices, whose polarization winds instead (radial, azimuthal).",
+    },
+    tags: [{ fr: "moment angulaire orbital", en: "orbital angular momentum" },
+      { fr: "vortex vectoriel", en: "vector vortex" }, { fr: "singularités", en: "singularities" }],
+    references: [
+      { label: "Allen et al., Phys. Rev. A (1992)", href: "https://doi.org/10.1103/PhysRevA.45.8185" },
+      { label: "Rosales-Guzmán et al., J. Opt. (2018)", href: "https://doi.org/10.1088/2040-8986/aaeb7d" },
+    ],
+    href: "vortex/index.html",
+    thumbnail: "assets/thumbs/vortex.jpg",
+    status: "ready",
+  },
+  {
     id: "chiral-vector",
     title: { fr: "Faisceau vectoriel chiral", en: "Chiral vector beam" },
     summary: {

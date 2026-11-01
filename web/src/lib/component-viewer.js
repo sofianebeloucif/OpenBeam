@@ -33,8 +33,8 @@ function element(tag, { dataset, ...props } = {}, ...children) {
  *              parts: [{ harmonic: "1", mask: [1, 1, 0], boost: "z" }] }   // or sum: true for the resultant
  *   boosts: [{ key, label, min, max, value }],          // on-screen magnification of weak components
  *   variants: { label: {fr, en}, options: [{ id, label: {fr, en} }] },  // optional
- *   intensity: (rhoOverW, w, w0) => number,              // 1 at the brightest point of the focus
- *   envelopeRadius: (w) => number,                       // radius of the faint beam envelope
+ *   intensity: (rhoOverW, w, w0, variant) => number,     // 1 at the brightest point of the focus
+ *   envelopeRadius: (w, variant) => number,              // radius of the faint beam envelope
  *   about: {fr, en}, references: [{ label, href }],
  *   modes: { fixed: {...}, moving: {...} },              // optional overrides of MODES (camera, arrow length)
  * }
@@ -102,10 +102,10 @@ export function createComponentViewer(config) {
     return out;
   }
 
-  const intensity = (r, w) => config.intensity(r, w, DATA.w0_um);
+  const intensity = (r, w) => config.intensity(r, w, DATA.w0_um, state.variant);
 
   function makeEnvelope(zScale) {
-    const profile = variant().moving.map((f) => new THREE.Vector2(config.envelopeRadius(f.w), f.z * zScale));
+    const profile = variant().moving.map((f) => new THREE.Vector2(config.envelopeRadius(f.w, state.variant), f.z * zScale));
     const lathe = new THREE.LatheGeometry(profile, 72);
     lathe.rotateZ(-Math.PI / 2); // lathe axis y -> scene x (physical z)
     return new THREE.Mesh(lathe, new THREE.MeshBasicMaterial({
