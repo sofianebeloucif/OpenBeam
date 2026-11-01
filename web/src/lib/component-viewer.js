@@ -12,6 +12,8 @@ import {
 import { initialLang, mountLangToggle, tr, translateStatic } from "./i18n.js";
 import { VIEWER_STRINGS as S } from "./strings.js";
 
+const DISC_EXTENT = 1.7; // disc radius in units of w, as makeDisc in scene.js
+
 const MODES = {
   fixed: { zScale: 1, arrowLength: 1.0, camera: [-7, 6.5, 13], fov: 30 },
   moving: { zScale: 0.15, arrowLength: 1.5, camera: [-16, 11.5, 27], fov: 26 },
@@ -33,10 +35,11 @@ function element(tag, { dataset, ...props } = {}, ...children) {
  *              parts: [{ harmonic: "1", mask: [1, 1, 0], boost: "z" }] }   // or sum: true for the resultant
  *   boosts: [{ key, label, min, max, value }],          // on-screen magnification of weak components
  *   variants: { label: {fr, en}, options: [{ id, label: {fr, en} }] },  // optional
- *   intensity: (rhoOverW, w, w0, variant) => number,     // 1 at the brightest point of the focus
+ *   intensity: (rhoOverW, w, w0, variant) => number,     // fallback when the data carry no intensity profile
  *   envelopeRadius: (w, variant) => number,              // radius of the faint beam envelope
  *   about: {fr, en}, references: [{ label, href }],
  *   modes: { fixed: {...}, moving: {...} },              // optional overrides of MODES (camera, arrow length)
+ *   zUnit: { um: number, label: string },                // optional unit of the z readout (default: z_R)
  * }
  */
 export function createComponentViewer(config) {
@@ -81,6 +84,7 @@ export function createComponentViewer(config) {
     return {
       z: lerp(A.z, B.z),
       w: lerp(A.w, B.w),
+      profile: A.profile && A.profile.map((v, k) => lerp(v, B.profile[k])),
       points: A.points.map((p, k) => lerp3(p, B.points[k])),
       vectors: A.points.map((_, k) => vectorsAt((part) => scaled(
         lerp3(A.harmonics[part.harmonic][k], B.harmonics[part.harmonic][k]), part))),
@@ -102,7 +106,11 @@ export function createComponentViewer(config) {
     return out;
   }
 
-  const intensity = (r, w) => config.intensity(r, w, DATA.w0_um, state.variant);
+  // exported radial profile (PROFILE_POINTS samples over the disc radius, see exporters/common.py) or the config formula
+  let profile = null;
+  const intensity = (r, w) => (profile
+    ? profile[Math.min(profile.length - 1, Math.round((r / DISC_EXTENT) * (profile.length - 1)))]
+    : config.intensity(r, w, DATA.w0_um, state.variant));
 
   function makeEnvelope(zScale) {
     const profile = variant().moving.map((f) => new THREE.Vector2(config.envelopeRadius(f.w, state.variant), f.z * zScale));
@@ -251,14 +259,17 @@ export function createComponentViewer(config) {
     if (state.mode === "fixed") {
       anchors = variant().fixed.points.map((p) => toScene(p, cfg.zScale));
       vectors = fixedVectors(state.tau);
-      w = DATA.w0_um; zScene = 0;
+      w = variant().fixed.w ?? DATA.w0_um; zScene = 0;
+      profile = variant().fixed.profile ?? null;
       $("readout").textContent = `t = ${((state.tau / TWO_PI) * DATA.period_fs).toFixed(2)} fs`;
     } else {
       const frame = movingFrame(state.s);
       anchors = frame.points.map((p) => toScene(p, cfg.zScale));
       vectors = frame.vectors;
       w = frame.w; zScene = frame.z * cfg.zScale;
-      $("readout").textContent = `z = ${(frame.z / DATA.zr_um).toFixed(2)} z_R`;
+      profile = frame.profile ?? null;
+      const unit = config.zUnit ?? { um: DATA.zr_um, label: "z_R" };
+      $("readout").textContent = `z = ${(frame.z / unit.um).toFixed(2)} ${unit.label}`;
     }
 
     const width = canvas.clientWidth, height = canvas.clientHeight;

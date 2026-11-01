@@ -5,8 +5,9 @@ Open source Python library to compute and visualize structured light beams.
 Beams implemented: the fundamental **Gaussian beam** (TEM00, linear or circular
 polarization), **scalar vortex beams** (LG₀ℓ, helical phase, orbital angular
 momentum), **vector vortex beams** (polarization winding around the axis: radial,
-azimuthal, any order), all with their post-paraxial longitudinal field, and a
-two-colour **chiral vector beam**: a tightly focused radially polarized vector vortex beam
+azimuthal, any order), **Bessel(-Gauss) beams** (quasi non-diffracting, any
+order), all with their post-paraxial longitudinal field, and a two-colour
+**chiral vector beam**: a tightly focused radially polarized vector vortex beam
 at `ω` (with its longitudinal component `E_z`) superposed with an azimuthally
 polarized vector vortex beam at `2ω`, whose sum is locally chiral, as proposed
 by A. Rodriguez *et al.*, *Chiral Vector Beams for Topological Enantio-Sensitive
@@ -31,6 +32,13 @@ Imaging*, [arXiv:2610.17111](https://arxiv.org/abs/2610.17111) (2026).
   times around the axis, carrying an orbital angular momentum ℓħ per photon.
   L. Allen, M. W. Beijersbergen, R. J. C. Spreeuw, J. P. Woerdman, Phys. Rev. A
   **45**, 8185 (1992), [doi:10.1103/PhysRevA.45.8185](https://doi.org/10.1103/PhysRevA.45.8185).
+- **Bessel beam**: a cone of plane waves whose transverse profile
+  J_n(k_r ρ) does not spread while propagating. J. Durnin, J. J. Miceli,
+  J. H. Eberly, *Diffraction-free beams*, PRL **58**, 1499 (1987),
+  [doi:10.1103/PhysRevLett.58.1499](https://doi.org/10.1103/PhysRevLett.58.1499);
+  finite-energy Bessel-Gauss beam (implemented): F. Gori, G. Guattari,
+  C. Padovani, *Bessel-Gauss beams*, Opt. Commun. **64**, 491 (1987),
+  [doi:10.1016/0030-4018(87)90276-8](https://doi.org/10.1016/0030-4018(87)90276-8).
 - **Locally chiral light**: at each point the tip of the electric field draws a
   chiral 3D Lissajous figure during one cycle. D. Ayuso *et al.*, *Synthetic
   chiral light for efficient control of chiral light–matter interaction*,
@@ -132,8 +140,8 @@ python animations/components_moving_3d.py   # -> output/components_moving_3d.mp4
 `web/` is a static site in French and English (language button, or `?lang=en`):
 a hub (`web/index.html`) listing the beams, and one interactive Three.js viewer
 per beam (`web/<beam id>/index.html`): the Gaussian beam (linear or circular
-polarization), vortex beams (scalar ℓ = 1, 2; vector radial, azimuthal) and the
-chiral vector beam.
+polarization), vortex beams (scalar ℓ = 1, 2; vector radial, azimuthal), Bessel
+beams (orders 0 and 1) and the chiral vector beam.
 
 Each viewer shows the components of the field in separate 3D panels (e.g.
 radial `ω`, `E_z`, azimuthal `2ω` and their resultant), each view can be shown
@@ -208,7 +216,7 @@ magnifies `E_z` (×8) and the `2ω` field (×6); the captions say so.
 | `openbeam.grid` | `Grid`: transverse planes and volumes with cylindrical coordinates |
 | `openbeam.modes` | Paraxial Laguerre-Gauss modes (Gouy phase, curvature, `w(z)`) |
 | `openbeam.field` | `MultiHarmonicField`: `F(t) = Re Σ E_n e^{-i n ω t}` |
-| `openbeam.beams` | Ready-made beams (`GaussianBeam`, `VortexBeam`, `VectorVortexBeam`, `ChiralVectorBeam`) |
+| `openbeam.beams` | Ready-made beams (`GaussianBeam`, `VortexBeam`, `VectorVortexBeam`, `BesselBeam`, `ChiralVectorBeam`) |
 | `openbeam.chirality` | `chiral_correlation`: local chirality h⁽⁵⁾ of ω + 2ω fields |
 | `openbeam.viz` | Matplotlib (transverse plane, propagation along z) and PyVista (3D) animations |
 

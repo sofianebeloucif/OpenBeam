@@ -42,6 +42,25 @@ export const BEAMS = [
     status: "ready",
   },
   {
+    id: "bessel",
+    title: { fr: "Faisceau de Bessel", en: "Bessel beam" },
+    summary: {
+      fr: "Un cône d'ondes planes qui interfèrent : un cœur fin qui ne s'étale pas sur une longue distance "
+        + "(faisceau quasi non diffractant), en version physique de Bessel-Gauss, d'ordre 0 ou 1.",
+      en: "A cone of interfering plane waves: a narrow core that does not spread over a long distance "
+        + "(quasi non-diffracting beam), in its physical Bessel-Gauss form, of order 0 or 1.",
+    },
+    tags: [{ fr: "non diffractant", en: "non-diffracting" }, { fr: "Bessel-Gauss", en: "Bessel-Gauss" },
+      { fr: "cône d'ondes planes", en: "cone of plane waves" }],
+    references: [
+      { label: "Durnin et al., PRL (1987)", href: "https://doi.org/10.1103/PhysRevLett.58.1499" },
+      { label: "Gori et al., Opt. Commun. (1987)", href: "https://doi.org/10.1016/0030-4018(87)90276-8" },
+    ],
+    href: "bessel/index.html",
+    thumbnail: "assets/thumbs/bessel.jpg",
+    status: "ready",
+  },
+  {
     id: "chiral-vector",
     title: { fr: "Faisceau vectoriel chiral", en: "Chiral vector beam" },
     summary: {
