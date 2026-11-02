@@ -44,15 +44,18 @@ export const BEAMS = [
     title: { fr: "Faisceaux vectoriels", en: "Vector beams" },
     summary: {
       fr: "Polarisation radiale ou azimutale : la direction du champ change d'un point à l'autre du faisceau. "
-        + "Fortement focalisé, le faisceau radial acquiert une composante longitudinale intense sur l'axe.",
+        + "Fortement focalisé, le faisceau radial acquiert une composante longitudinale intense sur l'axe ; avec "
+        + "l'option chirale (azimutal à 2ω), c'est le faisceau vectoriel chiral.",
       en: "Radial or azimuthal polarization: the field direction changes across the beam. Tightly focused, "
-        + "the radial beam acquires a strong longitudinal component on the axis.",
+        + "the radial beam acquires a strong longitudinal component on the axis; with the chiral option (azimuthal "
+        + "2ω), it is the chiral vector beam.",
     },
     tags: [{ fr: "polarisation radiale / azimutale", en: "radial / azimuthal polarization" },
       { fr: "singularité de polarisation", en: "polarization singularity" }],
     references: [
       { label: "Zhan, Adv. Opt. Photon. (2009)", href: "https://doi.org/10.1364/AOP.1.000001" },
       { label: "Dorn et al., PRL (2003)", href: "https://doi.org/10.1103/PhysRevLett.91.233901" },
+      { label: "Rodriguez et al., arXiv (2026)", href: "https://arxiv.org/abs/2610.17111" },
     ],
     href: "vector/index.html",
     thumbnail: "assets/thumbs/vector.jpg",
@@ -74,24 +77,6 @@ export const BEAMS = [
     ],
     href: "bessel/index.html",
     thumbnail: "assets/thumbs/bessel.jpg",
-    status: "ready",
-  },
-  {
-    id: "chiral-vector",
-    title: { fr: "Faisceau vectoriel chiral", en: "Chiral vector beam" },
-    summary: {
-      fr: "Lumière chirale synthétique à partir de faisceaux vectoriels : un faisceau radial à ω fortement focalisé "
-        + "et un faisceau azimutal à 2ω. Le champ électrique se tord en 3D et devient localement chiral.",
-      en: "Synthetic chiral light from vector beams: a tightly focused radial beam at ω and an azimuthal beam at 2ω. "
-        + "The electric field twists in 3D and becomes locally chiral.",
-    },
-    tags: [{ fr: "lumière chirale synthétique", en: "synthetic chiral light" }, { fr: "deux couleurs", en: "two colours" }],
-    references: [
-      { label: "Rodriguez et al., arXiv (2026)", href: "https://arxiv.org/abs/2610.17111" },
-      { label: "Ayuso et al., Nat. Photon. (2019)", href: "https://doi.org/10.1038/s41566-019-0531-2" },
-    ],
-    href: "vector/index.html?variant=radial&chiral=1",
-    thumbnail: "assets/thumbs/chiral-vector.jpg",
     status: "ready",
   },
 ];
