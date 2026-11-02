@@ -1,6 +1,6 @@
 // JavaScript port of the OpenBeam fields used by the web viewers.
 //
-// Mirrors src/openbeam/beams (VortexBeam / GaussianBeam, VectorVortexBeam, BesselBeam, TwoColourBeam):
+// Mirrors src/openbeam/beams (VortexBeam / GaussianBeam, VectorBeam, BesselBeam, TwoColourBeam):
 // same formulas, normalizations and conventions (phasors e^{-i w t}, propagation e^{ikz}, SI units).
 // web/test/compare.mjs checks it against values computed by the Python library.
 //

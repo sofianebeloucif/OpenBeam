@@ -1,4 +1,4 @@
-"""Animate the chiral vector beam (radial w + azimuthal 2w vector vortex beams) over a few optical cycles.
+"""Animate the chiral vector beam (radial w + azimuthal 2w vector beams) over a few optical cycles.
 
 Run: python examples/chiral_vector_beam.py   (outputs written to ./output)
 """

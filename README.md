@@ -4,12 +4,12 @@ Open source Python library to compute and visualize structured light beams.
 
 Beams implemented: the fundamental **Gaussian beam** (TEM00, linear or circular
 polarization), **scalar vortex beams** (LG₀ℓ, helical phase, orbital angular
-momentum), **vector vortex beams** (polarization winding around the axis: radial,
+momentum), **vector beams** (polarization rotating around the axis: radial,
 azimuthal, any order), **Bessel(-Gauss) beams** (quasi non-diffracting, any
 order), all with their post-paraxial longitudinal field, and a two-colour
-**chiral vector beam**: a tightly focused radially polarized vector vortex beam
-at `ω` (with its longitudinal component `E_z`) superposed with an azimuthally
-polarized vector vortex beam at `2ω`, whose sum is locally chiral, as proposed
+**chiral vector beam**: a tightly focused radially polarized vector beam at `ω`
+(with its longitudinal component `E_z`) superposed with an azimuthally
+polarized vector beam at `2ω`, whose sum is locally chiral, as proposed
 by A. Rodriguez *et al.*, *Chiral Vector Beams for Topological Enantio-Sensitive
 Imaging*, [arXiv:2610.17111](https://arxiv.org/abs/2610.17111) (2026).
 
@@ -18,10 +18,12 @@ Imaging*, [arXiv:2610.17111](https://arxiv.org/abs/2610.17111) (2026).
 - **Chiral vector beam**: the beam implemented here and its default parameters
   (λ = 639 nm, waists 2.5 and 5 µm, I₂ω/Iω = 0.01, ψ₂ω = 1.94π).
   A. Rodriguez *et al.*, [arXiv:2610.17111](https://arxiv.org/abs/2610.17111) (2026).
-- **Vector vortex beam**: spatially inhomogeneous polarization with a
-  polarization singularity on the axis, built from Laguerre-Gauss vortices of
-  charges ±ℓ in opposite circular polarizations; ℓ = 1 gives the radially and
-  azimuthally polarized (cylindrical vector) beams. C. Rosales-Guzmán,
+- **Vector beam** (cylindrical vector beam): the polarization, linear at each
+  point, rotates around the axis (angle mφ + θ₀), with a polarization
+  singularity on the axis and no orbital angular momentum; built from
+  Laguerre-Gauss vortices of charges ±m in opposite circular polarizations.
+  m = 1 gives the radially and azimuthally polarized beams. Unlike a (scalar)
+  vortex beam, its phase does not wind around the axis. C. Rosales-Guzmán,
   B. Ndagano, A. Forbes, *A review of complex vector light fields and their
   applications*, J. Opt. **20**, 123001 (2018),
   [doi:10.1088/2040-8986/aaeb7d](https://doi.org/10.1088/2040-8986/aaeb7d);
@@ -163,7 +165,7 @@ beam (`vector/index.html?variant=radial&chiral=1`).
 
 The fields are computed in the browser by `web/src/lib/fields.js`, a
 JavaScript port of the OpenBeam beams (`VortexBeam`, `GaussianBeam`,
-`VectorVortexBeam`, `BesselBeam`, `TwoColourBeam`). `web/test/reference.py`
+`VectorBeam`, `BesselBeam`, `TwoColourBeam`). `web/test/reference.py`
 computes reference fields with the Python library and `npm test` checks that
 the port agrees with them (relative error below 1e-7); the deployment fails
 otherwise.
@@ -234,7 +236,7 @@ magnifies `E_z` (×8) and the `2ω` field (×6); the captions say so.
 | `openbeam.grid` | `Grid`: transverse planes and volumes with cylindrical coordinates |
 | `openbeam.modes` | Paraxial Laguerre-Gauss modes (Gouy phase, curvature, `w(z)`) |
 | `openbeam.field` | `MultiHarmonicField`: `F(t) = Re Σ E_n e^{-i n ω t}` |
-| `openbeam.beams` | Ready-made beams (`GaussianBeam`, `VortexBeam`, `VectorVortexBeam`, `BesselBeam`, `TwoColourBeam`, `ChiralVectorBeam`) |
+| `openbeam.beams` | Ready-made beams (`GaussianBeam`, `VortexBeam`, `VectorBeam`, `BesselBeam`, `TwoColourBeam`, `ChiralVectorBeam`) |
 | `openbeam.chirality` | `chiral_correlation`: local chirality h⁽⁵⁾ of ω + 2ω fields |
 | `openbeam.viz` | Matplotlib (transverse plane, propagation along z) and PyVista (3D) animations |
 

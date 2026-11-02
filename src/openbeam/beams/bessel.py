@@ -27,11 +27,11 @@ from scipy.special import jv
 from ..field import MultiHarmonicField
 from ..grid import Grid
 from ..modes import rayleigh_range
-from .vortex import POLARIZATIONS
+from ._common import Beam, field_from_terms, jones_vector
 
 
 @dataclass
-class BesselBeam:
+class BesselBeam(Beam):
     """Bessel-Gauss beam of order ``n`` with a uniform polarization.
 
     ``kr`` is the radial wavenumber, ``w0`` the waist of the Gaussian envelope;
@@ -39,21 +39,10 @@ class BesselBeam:
     ``amplitude`` is the peak transverse field at the focus.
     """
 
-    wavelength: float = 632.8e-9
-    kr: float = 2.0e6
     w0: float = 8e-6
+    kr: float = 2.0e6
     n: int = 0
     polarization: str | tuple = "linear"
-    amplitude: float = 1.0
-    include_carrier: bool = True
-
-    @property
-    def k(self) -> float:
-        return 2 * np.pi / self.wavelength
-
-    @property
-    def omega(self) -> float:
-        return 2 * np.pi * 299_792_458.0 / self.wavelength
 
     @property
     def cone_angle(self) -> float:
@@ -66,10 +55,7 @@ class BesselBeam:
 
     @property
     def jones(self) -> np.ndarray:
-        if isinstance(self.polarization, str):
-            return POLARIZATIONS[self.polarization]
-        p = np.array([*self.polarization, 0], dtype=complex)
-        return p / np.linalg.norm(p)
+        return jones_vector(self.polarization)
 
     def _peak(self) -> float:
         # the envelope decreases, so the peak lies in the first lobes (same grid as web/src/lib/fields.js)
@@ -92,12 +78,4 @@ class BesselBeam:
         u = envelope * f
         du_dx = envelope * (df_dx - 2 * a * grid.x * f)
         du_dy = envelope * (df_dy - 2 * a * grid.y * f)
-
-        p = self.jones
-        E = np.zeros((3, *grid.shape), dtype=complex)
-        E[0], E[1] = p[0] * u, p[1] * u
-        E[2] = 1j / k * (p[0] * du_dx + p[1] * du_dy)
-        E *= self.amplitude
-        if self.include_carrier:
-            E = E * np.exp(1j * k * grid.z)
-        return MultiHarmonicField(grid=grid, omega=self.omega, harmonics={1: E})
+        return field_from_terms(self, [(self.jones, (u, du_dx, du_dy))], grid)

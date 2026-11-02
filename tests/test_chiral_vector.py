@@ -6,6 +6,11 @@ from openbeam import ChiralVectorBeam, Grid
 BEAM = ChiralVectorBeam(include_carrier=False)
 
 
+def harmonics(grid):
+    field = BEAM.field(grid)
+    return field.harmonics[1], field.harmonics[2]
+
+
 def _radial_unit(grid):
     return np.stack([np.cos(grid.phi), np.sin(grid.phi)])
 
@@ -15,20 +20,19 @@ def _azimuthal_unit(grid):
 
 
 @pytest.mark.parametrize("z", [0.0, 15e-6])
-def test_polarization_is_radial_then_azimuthal(z):
+def test_radial_at_omega_and_azimuthal_at_2omega(z):
     grid = Grid.transverse(extent=4 * BEAM.w_omega, n=60, z=z)
-    E1 = BEAM.radial_component(grid)[:2]
-    E2 = BEAM.azimuthal_component(grid)[:2]
-    assert np.max(np.abs(np.sum(E1 * _azimuthal_unit(grid), axis=0))) < 1e-12 * np.max(np.abs(E1))
-    assert np.max(np.abs(np.sum(E2 * _radial_unit(grid), axis=0))) < 1e-12 * np.max(np.abs(E2))
-    assert np.all(BEAM.radial_component(grid)[2] == 0)
-    assert np.all(BEAM.azimuthal_component(grid)[2] == 0)
+    E1, E2 = harmonics(grid)
+    assert np.max(np.abs(np.sum(E1[:2] * _azimuthal_unit(grid), axis=0))) < 1e-12 * np.max(np.abs(E1))
+    assert np.max(np.abs(np.sum(E2[:2] * _radial_unit(grid), axis=0))) < 1e-12 * np.max(np.abs(E2))
+    assert np.max(np.abs(E2[2])) < 1e-12 * np.max(np.abs(E2))  # the azimuthal beam has no longitudinal field
 
 
 def test_peak_amplitudes_and_intensity_ratio():
     grid = Grid.transverse(extent=4 * BEAM.w_2omega, n=801)
-    peak1 = np.max(np.linalg.norm(BEAM.radial_component(grid), axis=0))
-    peak2 = np.max(np.linalg.norm(BEAM.azimuthal_component(grid), axis=0))
+    E1, E2 = harmonics(grid)
+    peak1 = np.max(np.linalg.norm(E1[:2], axis=0))
+    peak2 = np.max(np.linalg.norm(E2[:2], axis=0))
     assert peak1 == pytest.approx(BEAM.amplitude, rel=1e-4)
     assert (peak2 / peak1) ** 2 == pytest.approx(BEAM.intensity_ratio, rel=1e-3)
 
@@ -37,18 +41,16 @@ def test_peak_amplitudes_and_intensity_ratio():
 def test_longitudinal_field_matches_divergence_relation(z):
     """E_z = (i/k) (1/rho) d_rho(rho E_rho), checked by finite differences along phi = 0."""
     rho = np.linspace(0.2, 3, 2001) * BEAM.w_omega
-    grid = Grid.from_axes(rho, 0.0, z)
-    E_rho = BEAM.radial_component(grid)[0].ravel()
+    E1, _ = harmonics(Grid.from_axes(rho, 0.0, z))
+    E_rho, Ez = E1[0].ravel(), E1[2].ravel()
     Ez_numeric = 1j / BEAM.k * np.gradient(rho * E_rho, rho) / rho
-    Ez = BEAM.longitudinal_component(grid)[2].ravel()
     np.testing.assert_allclose(Ez[5:-5], Ez_numeric[5:-5], atol=1e-5 * np.max(np.abs(Ez)))
 
 
 def test_longitudinal_field_at_focus():
-    """Node at rho = w and pi/2 phase shift with respect to E_rho."""
-    grid = Grid.from_axes(np.array([0.3, 1.0, 1.7]) * BEAM.w_omega, 0.0, 0.0)
-    Ez = BEAM.longitudinal_component(grid)[2].ravel()
-    E_rho = BEAM.radial_component(grid)[0].ravel()
+    """Central spot, node at rho = w, then a ring; pi/2 phase shift with respect to E_rho."""
+    E1, _ = harmonics(Grid.from_axes(np.array([0.3, 1.0, 1.7]) * BEAM.w_omega, 0.0, 0.0))
+    E_rho, Ez = E1[0].ravel(), E1[2].ravel()
     assert abs(Ez[1]) < 1e-12 * abs(Ez[0])
     assert np.sign(Ez[0].imag) == -np.sign(Ez[2].imag)
     np.testing.assert_allclose(np.real(Ez / E_rho)[[0, 2]], 0, atol=1e-12)
@@ -63,7 +65,7 @@ def test_field_is_periodic():
 
 
 def test_poincare_index_is_one():
-    """Polarization singularity of a vector vortex beam: the field direction winds once around the axis."""
+    """Polarization singularity of the radial beam: the field direction winds once around the axis."""
     phi = np.linspace(0, 2 * np.pi, 721)
     r = BEAM.w_omega / np.sqrt(2)
     grid = Grid(r * np.cos(phi)[:, None, None], r * np.sin(phi)[:, None, None], np.zeros((phi.size, 1, 1)))

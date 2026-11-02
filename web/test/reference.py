@@ -15,7 +15,7 @@ from pathlib import Path
 
 import numpy as np
 
-from openbeam import BesselBeam, GaussianBeam, Grid, TwoColourBeam, VectorVortexBeam, VortexBeam
+from openbeam import BesselBeam, GaussianBeam, Grid, TwoColourBeam, VectorBeam, VortexBeam
 from openbeam.modes import rayleigh_range
 
 OUT = Path(__file__).resolve().parents[1] / "build" / "reference.json"
@@ -36,7 +36,7 @@ def python_beam(spec, wavelength=None, w0=None, mode=None):
             return GaussianBeam(wavelength=lam, w0=w, polarization=jones_tuple(m["jones"]) if isinstance(m["jones"], list) else m["jones"])
         return VortexBeam(wavelength=lam, w0=w, l=m["l"], polarization=jones_tuple(m["jones"]) if isinstance(m["jones"], list) else m["jones"])
     if m["type"] == "vector":
-        return VectorVortexBeam(wavelength=lam, w0=w, m=m["m"], theta0=m["theta0"])
+        return VectorBeam(wavelength=lam, w0=w, m=m["m"], theta0=m["theta0"])
     if m["type"] == "bessel":
         return BesselBeam(wavelength=lam, w0=w, n=m["n"], kr=m["kr"], polarization=jones_tuple(m["jones"]) if isinstance(m["jones"], list) else m["jones"])
     raise ValueError(m["type"])
