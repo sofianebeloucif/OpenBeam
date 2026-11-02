@@ -36,3 +36,25 @@ def test_azimuthally_symmetric_on_the_ring():
 def test_requires_two_colours():
     with pytest.raises(ValueError):
         chiral_correlation(GaussianBeam().field(ring_point()))
+
+
+def test_two_colour_beam_reproduces_the_chiral_vector_beam():
+    from openbeam import TwoColourBeam, VectorVortexBeam
+
+    chiral = ChiralVectorBeam()
+    two = TwoColourBeam(
+        VectorVortexBeam(wavelength=chiral.wavelength, w0=chiral.w_omega, m=1, theta0=0.0),
+        VectorVortexBeam(wavelength=chiral.wavelength / 2, w0=chiral.w_2omega, m=1, theta0=np.pi / 2),
+        intensity_ratio=chiral.intensity_ratio, psi_2w=chiral.psi_2w,
+    )
+    grid = Grid.volume(extent=4 * chiral.w_omega, n=9, z_min=-10e-6, z_max=10e-6, nz=3)
+    a, b = chiral.field(grid), two.field(grid)
+    for n in (1, 2):
+        np.testing.assert_allclose(a.harmonics[n], b.harmonics[n], atol=1e-12)
+
+
+def test_two_colour_beam_requires_half_wavelength():
+    from openbeam import TwoColourBeam
+
+    with pytest.raises(ValueError):
+        TwoColourBeam(GaussianBeam(), GaussianBeam())

@@ -2,12 +2,14 @@
   "name": "openbeam-web",
   "private": true,
   "scripts": {
-    "build": "esbuild src/hub.js src/viewers/*.js --bundle --format=iife --minify --outbase=src --outdir=build"
+    "build": "esbuild src/hub.js src/viewers/*.js --bundle --format=iife --minify --outbase=src --outdir=build",
+    "test": "node test/compare.mjs build/reference.json"
   },
   "dependencies": {
     "three": "^0.170.0"
   },
   "devDependencies": {
     "esbuild": "^0.24.0"
-  }
+  },
+  "type": "module"
 }

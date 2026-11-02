@@ -25,27 +25,30 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Export the fields with OpenBeam
+      - name: Reference fields from the Python library
         run: |
           pip install -e .
-          python web/export.py
+          python web/test/reference.py
 
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
           cache-dependency-path: web/package-lock.json
-      - name: Bundle the pages
+      - name: Check the JavaScript port against Python, then bundle the pages
         working-directory: web
         run: |
           npm ci
+          npm test
           npm run build
 
       - name: Assemble the site
         run: |
           mkdir _site
           cp web/index.html _site/
-          cp -r web/assets web/build _site/
+          mkdir _site/build
+          cp -r web/assets _site/
+          cp -r web/build/hub.js web/build/viewers _site/build/
           # one folder per beam viewer: every directory holding an index.html
           for page in web/*/index.html; do cp -r "$(dirname "$page")" _site/; done
           touch _site/.nojekyll

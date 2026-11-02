@@ -16,15 +16,18 @@ export const HOT = (x) => {
   return [Math.min(1, t / 0.365), Math.min(1, Math.max(0, (t - 0.365) / 0.381)), Math.max(0, (t - 0.746) / 0.254)];
 };
 
-export function makeDisc() {
-  // polar grid in units of w; scaled to w(z) and placed at the front each frame
-  const nR = 40, nP = 90, rMax = 1.7;
-  const positions = [], colors = [], index = [];
+export const DISC_EXTENT = 1.7; // disc radius, in units of the beam scale
+
+export function makeDisc(nR = 30, nP = 72) {
+  // polar grid in units of the beam scale; scaled and placed at the wavefront each frame.
+  // userData.points: [r, phi] of every vertex, where the viewer evaluates the intensity.
+  const positions = [], colors = [], index = [], points = [];
   for (let i = 0; i <= nR; i++) {
     for (let j = 0; j <= nP; j++) {
-      const r = (rMax * i) / nR, p = (TWO_PI * j) / nP;
+      const r = (DISC_EXTENT * i) / nR, p = (TWO_PI * j) / nP;
       positions.push(0, r * Math.cos(p), r * Math.sin(p));
       colors.push(0, 0, 0, 0);
+      points.push([r, p]);
     }
   }
   for (let i = 0; i < nR; i++) {
@@ -40,17 +43,17 @@ export function makeDisc() {
   const mesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({
     vertexColors: true, transparent: true, depthWrite: false, side: THREE.DoubleSide,
   }));
-  mesh.userData.radii = Array.from({ length: (nR + 1) * (nP + 1) }, (_, k) => (rMax * Math.floor(k / (nP + 1))) / nR);
+  mesh.userData.points = points;
   return mesh;
 }
 
-export function updateDisc(disc, w, zScene, intensity) {
-  // intensity(rho / w, w): cycle-averaged intensity, 1 at the brightest point of the focus
+export function updateDisc(disc, size, zScene, levels) {
+  // levels[k]: intensity at vertex k, 1 at the brightest point of the focus
   disc.position.set(zScene, 0, 0);
-  disc.scale.set(1, w, w);
+  disc.scale.set(1, size, size);
   const colors = disc.geometry.attributes.color;
-  disc.userData.radii.forEach((r, k) => {
-    const level = Math.min(intensity(r, w), 1);
+  levels.forEach((value, k) => {
+    const level = Math.min(Math.max(value, 0), 1);
     const [R, G, B] = HOT(level / 1.1);
     colors.setXYZW(k, 0.85 * R, 0.85 * G, 0.85 * B, 0.06 + 0.42 * level);
   });

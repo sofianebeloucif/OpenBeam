@@ -40,3 +40,5 @@ footer { padding: 18px clamp(18px, 5vw, 56px); color: var(--muted); font-size: 1
 .lang { position: absolute; top: 16px; right: clamp(18px, 5vw, 56px); z-index: 3; background: #1d1d25; color: var(--fg);
   border: 1px solid #3a3a42; border-radius: 8px; padding: 6px 12px; font: inherit; font-weight: 600; cursor: pointer; }
 .lang:hover { background: #2a2a34; }
+
+.note { margin-top: 10px; font-size: 14px; }

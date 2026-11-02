@@ -137,63 +137,81 @@ python animations/components_moving_3d.py   # -> output/components_moving_3d.mp4
 
 ## Web version
 
-`web/` is a static site in French and English (language button, or `?lang=en`):
-a hub (`web/index.html`) listing the beams, and one interactive Three.js viewer
-per beam (`web/<beam id>/index.html`): the Gaussian beam (linear or circular
-polarization), vortex beams (scalar ℓ = 1, 2; vector radial, azimuthal), Bessel
-beams (orders 0 and 1) and the chiral vector beam.
+Live site: <https://sofianebeloucif.github.io/OpenBeam/> (French and English:
+language button, or `?lang=en`).
 
-Each viewer shows the components of the field in separate 3D panels (e.g.
-radial `ω`, `E_z`, azimuthal `2ω` and their resultant), each view can be shown
-or hidden, in two modes (wavefront fixed at the focus, oscillating in time;
-wavefront travelling through the focus), with play/pause, a time or position
-slider, speed and on-screen magnification of the weak components. Pages adapt
-to the screen (views side by side or stacked, settings in a drawer on phones).
-Add `#moving` to a viewer URL to start in the second mode.
+`web/` is a static site: a hub (`web/index.html`) and one interactive Three.js
+viewer per beam family (`web/<id>/index.html`): Gaussian beam (linear or
+circular polarization), vortex beams (ℓ = 1, 2, 3), vector beams (radial,
+azimuthal) and Bessel beams (orders 0 and 1).
+
+Each viewer shows the field on a wavefront, split into components in separate
+3D panels: transverse field, longitudinal field `E_z`, and their resultant.
+Each panel has its own scale: the disc shows the cycle-averaged intensity of
+its component and the arrows its instantaneous field, normalized to their
+maximum at the focus, with the relative amplitude in the title (e.g. two `E_z`
+lobes along the polarization of a Gaussian beam); the resultant is at true
+scale. A slider sets the waist `w₀` (the cone angle for Bessel beams): tighter
+focusing makes `E_z` grow. Two modes: wavefront fixed at the focus, oscillating
+in time, or travelling through the focus (`#moving` in the URL).
+
+**Synthetic chiral light** is an option on every beam (`?chiral=1`): the same
+beam at `2ω` (half the wavelength, twice the waist, orthogonal polarization:
+x → y, σ⁺ → σ⁻, radial → azimuthal), with adjustable intensity ratio and phase
+delay `ψ_2ω`. The radial vector beam with this option is the chiral vector
+beam (`vector/index.html?variant=radial&chiral=1`).
+
+The fields are computed in the browser by `web/src/lib/fields.js`, a
+JavaScript port of the OpenBeam beams (`VortexBeam`, `GaussianBeam`,
+`VectorVortexBeam`, `BesselBeam`, `TwoColourBeam`). `web/test/reference.py`
+computes reference fields with the Python library and `npm test` checks that
+the port agrees with them (relative error below 1e-7); the deployment fails
+otherwise.
 
 ```
 web/
-  index.html                   hub
-  <beam id>/index.html         viewer pages (generic markup, filled by the viewer script)
-  assets/                      shared CSS, favicon, card thumbnails
-  src/beams.js                 registry of the beams shown on the hub
-  src/hub.js                   hub cards
-  src/lib/component-viewer.js  generic viewer, driven by a per-beam config
-  src/lib/scene.js             Three.js helpers (arrows, wavefront disc, layout)
+  index.html                hub
+  <id>/index.html           viewer pages (generic markup, filled by the viewer script)
+  assets/                   shared CSS, favicon, card thumbnails
+  src/beams.js              registry of the beams shown on the hub
+  src/hub.js                hub cards
+  src/lib/fields.js         JavaScript port of the OpenBeam fields
+  src/lib/field-viewer.js   generic viewer, driven by a per-beam config
+  src/lib/scene.js          Three.js helpers (arrows, wavefront disc, layout)
   src/lib/i18n.js, strings.js  language selection and interface texts (fr / en)
-  src/viewers/<id>.js          per-beam config: panels, boosts, variants, texts, references
-  exporters/common.py          field export on the arrow anchors (focus + travelling front)
-  exporters/<name>.py          per-beam export, registered in exporters/__init__.py
-  export.py                    writes web/build/data/<id>.js
-  build/                       generated (data + bundles), not versioned
+  src/viewers/<id>.js       per-beam config: beam spec, variants, size slider, texts, references
+  test/reference.py         reference fields from the Python library -> web/build/reference.json
+  test/compare.mjs          `npm test`: JavaScript port vs reference
+  test/check-pages.mjs      headless-Chrome screenshots and error report of pages
+  build/                    generated, not versioned
 ```
 
-Build and open locally:
+Build, check and open locally:
 
 ```bash
-python web/export.py                    # -> web/build/data/*.js
-cd web && npm install && npm run build  # -> web/build/hub.js, web/build/viewers/*.js
+python web/test/reference.py            # reference fields from the Python library
+cd web && npm install && npm test       # JavaScript port vs Python
+npm run build                           # -> web/build/hub.js, web/build/viewers/*.js
 # then open web/index.html
 ```
 
 ### Adding a beam
 
-1. A beam class in `openbeam.beams` exposing `field(grid)`.
-2. `web/exporters/<name>.py` with an `export() -> dict` function built on
-   `common.export_variants`, registered in `EXPORTERS` (`web/exporters/__init__.py`)
-   under the beam id (see `gaussian.py`).
-3. `web/src/viewers/<id>.js`: a `createComponentViewer` config (see
+1. The beam in the Python library (`src/openbeam/beams`, with tests).
+2. Its formula in `web/src/lib/fields.js` (a new `mode.type`, and its
+   wavefront phase and size in `modeGeometry`), and a case in
+   `web/test/reference.py`; `npm test` must pass.
+3. `web/src/viewers/<id>.js`: a `createFieldViewer` config (see
    `gaussian.js`), and `web/<id>/index.html`: copy an existing viewer page and
-   change its title and the two script names.
-4. An entry in `web/src/beams.js` (texts in `{ fr, en }`) with `status: "ready"`
-   and a thumbnail in `web/assets/thumbs/`.
+   change its title and script name.
+4. An entry in `web/src/beams.js` (texts in `{ fr, en }`) with
+   `status: "ready"` and a thumbnail in `web/assets/thumbs/`.
 
 ### GitHub Pages
 
-`.github/workflows/pages.yml` exports the data, builds the bundles and publishes
-the hub and every viewer folder on each push to `main`. In the repository
-settings, choose *Pages > Build and deployment > Source: GitHub Actions*; the
-site is then served at `https://<user>.github.io/<repo>/`.
+`.github/workflows/pages.yml` computes the reference fields, runs `npm test`,
+builds the bundles and publishes the hub and every viewer folder on each push
+to `main` (*Pages > Build and deployment > Source: GitHub Actions*).
 
 ## Explainer video
 
@@ -216,7 +234,7 @@ magnifies `E_z` (×8) and the `2ω` field (×6); the captions say so.
 | `openbeam.grid` | `Grid`: transverse planes and volumes with cylindrical coordinates |
 | `openbeam.modes` | Paraxial Laguerre-Gauss modes (Gouy phase, curvature, `w(z)`) |
 | `openbeam.field` | `MultiHarmonicField`: `F(t) = Re Σ E_n e^{-i n ω t}` |
-| `openbeam.beams` | Ready-made beams (`GaussianBeam`, `VortexBeam`, `VectorVortexBeam`, `BesselBeam`, `ChiralVectorBeam`) |
+| `openbeam.beams` | Ready-made beams (`GaussianBeam`, `VortexBeam`, `VectorVortexBeam`, `BesselBeam`, `TwoColourBeam`, `ChiralVectorBeam`) |
 | `openbeam.chirality` | `chiral_correlation`: local chirality h⁽⁵⁾ of ω + 2ω fields |
 | `openbeam.viz` | Matplotlib (transverse plane, propagation along z) and PyVista (3D) animations |
 
@@ -233,6 +251,18 @@ at the focus.
 .venv/bin/pytest
 ```
 
+## How to cite
+
+If you use OpenBeam (library, animations or web viewers) in a publication, a
+course or another project, please cite it:
+
+> S. Beloucif, *OpenBeam: compute and visualize structured light beams*,
+> version 0.1.0 (2026), https://github.com/sofianebeloucif/OpenBeam
+
+The citation metadata are in [`CITATION.cff`](CITATION.cff) (GitHub's
+*Cite this repository* button).
+
 ## License
 
-MIT
+MIT (see [`LICENSE`](LICENSE)): free use, modification and redistribution,
+keeping the copyright notice.

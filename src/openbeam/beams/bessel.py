@@ -72,7 +72,8 @@ class BesselBeam:
         return p / np.linalg.norm(p)
 
     def _peak(self) -> float:
-        rho = np.linspace(0, 3 * self.w0, 20001)
+        # the envelope decreases, so the peak lies in the first lobes (same grid as web/src/lib/fields.js)
+        rho = np.linspace(0, min(3 * self.w0, 12 / self.kr), 20001)
         return float(np.max(np.abs(jv(self.n, self.kr * rho)) * np.exp(-((rho / self.w0) ** 2))))
 
     def field(self, grid: Grid) -> MultiHarmonicField:

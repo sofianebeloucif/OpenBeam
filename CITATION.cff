@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use OpenBeam, please cite it as below."
+title: "OpenBeam: compute and visualize structured light beams"
+type: software
+authors:
+  - family-names: Beloucif
+    given-names: Sofiane
+version: 0.1.0
+date-released: 2026-11-02
+license: MIT
+repository-code: "https://github.com/sofianebeloucif/OpenBeam"
+url: "https://sofianebeloucif.github.io/OpenBeam/"
+keywords:
+  - optics
+  - structured light
+  - vector beams
+  - optical vortices
+  - Bessel beams
+  - synthetic chiral light
